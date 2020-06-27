@@ -1,9 +1,10 @@
 // Test import of a JavaScript function, an SVG, and Sass
-import Init from './components/Init'
-// import '../sass/app.sass'
+import ThreeMainScene from './components/ThreeMainScene'
+import '../sass/app.sass'
+import LoadingComponent from './components/LoadingComponent';
 
 // Create heading node
 
 document.addEventListener('DOMContentLoaded', () => {
-    new Init()
+    new LoadingComponent();
 });

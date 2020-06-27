@@ -1,0 +1,18 @@
+@mixin font-face($font-family, $weight, $url)
+    @font-face
+        font-family: '#{$font-family}'
+        src: url('../fonts/#{$url}.eot')
+        src: url('../fonts/#{$url}.eot?#iefix') format('embedded-opentype'), url('../fonts/#{$url}.woff2') format('woff2'), url('../fonts/#{$url}.woff') format('woff'), url('../fonts/#{$url}.ttf') format('truetype'), url('../fonts/#{$url}.svg') format('svg')
+        font-style: normal
+        font-display: swap
+        font-weight: $weight
+        -webkit-font-smoothing: antialiased
+        -khtml-font-smoothing: antialiased
+        -apple-font-smoothing: antialiased
+        font-smooth: always
+        -moz-osx-font-smoothing: grayscale
+
+@include font-face("Adieu-Bold", 700, "Adieu/Adieu-Bold")
+@include font-face("Adieu-Black", 900, "Adieu/Adieu-Bold")
+@include font-face("Moderat-Regular", 400, "Moderat/Moderat-Regular")
+

@@ -122,6 +122,17 @@ module.exports = {
           context: 'src', // prevent display of src/ in filename
         },
       },
+      
+      /*GL FILES
+      */
+      {
+        test: /\.(glsl|vs|fs|vert|frag)$/,
+        exclude: /node_modules/,
+        use: [
+          'raw-loader',
+          'glslify-loader'
+          ]
+        }
     ],
   },
 }
