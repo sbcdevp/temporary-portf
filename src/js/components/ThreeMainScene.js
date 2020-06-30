@@ -37,7 +37,8 @@ class ThreeMainScene {
             aboutContainer: this._container.querySelector('.js-about'),
             infoBtn: this._container.querySelector('.js-info-btn'),
             infoDescription: this._container.querySelector('.js-description'),
-            socialLink: this._container.querySelectorAll('.js-social')
+            socialLink: this._container.querySelectorAll('.js-social'),
+            headPosition: this._container.querySelector('.js-head')
         }
         this._setup();
 
@@ -97,6 +98,8 @@ class ThreeMainScene {
         this._wheelSensibility = 20
         this._isInfoEnabled = true
         this._slides = [this._textures.whole, this._textures.dfts, this._textures.louvre, this._textures.mirror, this._textures.jahneration];
+        this._texturesTab = [this._textures.whole, this._textures.dfts, this._textures.louvre, this._textures.mirror, this._textures.jahneration, this._textures.about];
+
     }
 
      _setupSplitText() {
@@ -135,7 +138,7 @@ class ThreeMainScene {
     _setupSceneObjects() {
         this._setupLights();
         this._setupPlane();
-        this._setupHeadObject();
+        // this._setupHeadObject();
     }
 
     _setupPlane() {
@@ -154,7 +157,9 @@ class ThreeMainScene {
             scrollProgress: { value: 0 },
             texture1: { value: this._textures.whole },
             texture2: { value: this._textures.dfts },
-            u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+            u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+            textureRatio : {value: 0},
+            screenRatio: {value: 0}
         };
 
         this._shaderMaterial = new THREE.ShaderMaterial({
@@ -180,7 +185,15 @@ class ThreeMainScene {
     _setupHeadObject() {
         this._head = this._models.head.scene;
         this._head.scale.set(0.1, 0.1, 0.1)
-        this._head.position.set(-2.8, 1.25, 0.5)
+        let vector = new THREE.Vector3();
+
+        vector.project(this._camera)
+    
+        vector.x = (vector.x + 1) * this._canvas.width / 2;
+        vector.y = -(vector.y - 1) * this._canvas.height / 2;
+        vector.z = 1
+
+        this._head.position.set(vector.x, vector.y, vector.z )
         this._scene.add(this._head);
     }
 
@@ -281,7 +294,7 @@ class ThreeMainScene {
             this._setSlideOutAnimation()
         } else {
             this._currentSlide = mod(this._currentSlide -= 1,this._slides.length);
-            if(this._currentSlide === 3 && this._lastSlide === 0){
+            if(this._currentSlide === this._slides.length -1 && this._lastSlide === 0){
                 this._shaderMaterial.uniforms.texture2.value = this._slides[this._slides.length -1];
             }else{
                 this._shaderMaterial.uniforms.texture2.value = this._slides[this._lastSlide - 1];
@@ -329,19 +342,20 @@ class ThreeMainScene {
     }
 
     _resize() {
+
         this._width = window.innerWidth;
         this._height = window.innerHeight;
         this._devicePixelRatio = window.devicePixelRatio;
         
+        this._shaderMaterial.uniforms.screenRatio.value = window.innerWidth / window.innerHeight
+        this._shaderMaterial.uniforms.textureRatio.value = this._texturesTab[this._currentSlide].image.width / this._texturesTab[this._currentSlide].image.height
+        
         this._canvas.width = this._width;
         this._canvas.height = this._height;
         // this._shaderMaterial.uniforms.u_res.value
-        this._shaderMaterial.uniforms.u_res.value.x = this._width;
-        this._shaderMaterial.uniforms.u_res.value.y = this._height;
 
         this._renderer.setSize(this._width, this._height);
         this._renderer.setPixelRatio(this._devicePixelRatio);
-        this._renderer.setViewport(0, 0, window.innerWidth, window.innerHeight)
         // this._camera.fov = window.innerHeight / window.innerWidth;
         this._camera.aspect = this._width/this._height;
         this._camera.updateProjectionMatrix();
@@ -354,7 +368,7 @@ class ThreeMainScene {
 
     _render() {
         // this._head.rotation.y += 0.015
-        this._updateHeadLookAt();
+        // this._updateHeadLookAt();
 
         this._renderer.render(this._scene, this._camera)
     }
@@ -373,7 +387,6 @@ class ThreeMainScene {
     }
 
     _swipeHandler(swipeEvent) {
-        console.log("hello")
         if (this._isScrollEnabled) {
             this._lastSlide = this._currentSlide;
             this._sens = swipeEvent.type === "swiperight" ? '-' : '+';
