@@ -3,9 +3,11 @@
     height: 100vh
     display: none
     .slider__projects
+        height: 100%
         width: 100%
         .slider__item
             width: 100%
+            height: 100%
             display: none
             .item__info
                 position: absolute
@@ -19,13 +21,13 @@
                 h2
                     display: inline-block
                     font-family: $adieuBlack
-                    font-size: 31px
+                    font-size: rem(31px)
                     text-transform: uppercase
                 h3
                     display: inline-block
                     font-family: $moderat
-                    font-size: 14px
-        .active
-            display: block
-    .active
+                    font-size: rem(14px)
+            &.active
+                display: block
+    &.active
         display: block

@@ -6,20 +6,62 @@
     left: 0
     display: none
     .about__content
-        margin: 86px 0 0 86px
         .content__description
-            width: 1020px
-            font-size: 50px
-            font-family: $adieuBold
+            font-family: $adieuLight
+            .word7, .word8, .word9, .word11, .bolder
+                font-family: $adieuBlack
         .content__social
             position: absolute
             bottom: 65px
-            width: 1020px
-            font-size: 15px
+            font-size: rem(15px)
             font-family: $adieuBold
             text-transform: uppercase
+            overflow: hidden
+            font-family: $adieuRegular
             a
                 margin-right: 40px
+                display: inline-block
     &.active
         display: block
+    
 
+@include mq-extra-narrow
+    .container__about
+        .about__content
+            margin: 86px 0 0 36px
+            max-width: 200px
+            .content__description
+                font-size: rem(20px)
+            .content__social
+                max-width: 200px
+
+@include mq-narrow
+    .container__about
+        .about__content
+            margin: 86px 0 0 36px
+            max-width: 420px
+            .content__description
+                font-size: rem(30px)
+            .content__social
+                max-width: 620px
+
+@include mq-regular
+    .container__about
+        .about__content
+            margin: 86px 0 0 36px
+            max-width: 820px
+            .content__description
+                font-size: rem(50px)
+            .content__social
+                max-width: 820px
+
+@include mq-wide
+    .container__about
+        .about__content
+            margin: 86px 0 0 86px
+            max-width: 1020px
+            .content__description
+                font-size: rem(50px)
+            .content__social
+                max-width: 820px
+                
