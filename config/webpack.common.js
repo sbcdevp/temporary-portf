@@ -58,6 +58,7 @@ module.exports = {
       favicon: paths.static + '/favicon.png',
       template: paths.src + '/template.html', // template file
       filename: 'index.html', // output file
+      path: paths.build
     }),
   ],
 
@@ -100,7 +101,7 @@ module.exports = {
        * Copy image files to build folder.
        */
       {
-        test: /\.(?:ico|gif|png|jpg|jpeg|webp|svg)$/i,
+        test: /\.(?:ico|gif|png|jpg|jpeg|webp|svg|mp4)$/i,
         loader: 'file-loader',
         options: {
           name: '[path][name].[ext]',

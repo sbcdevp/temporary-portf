@@ -7,6 +7,7 @@ uniform sampler2D texture2;
 uniform vec2 u_res;
 uniform float textureRatio;
 uniform float screenRatio;
+uniform vec2 u_mouse;
 
 
 

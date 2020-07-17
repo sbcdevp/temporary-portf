@@ -13,14 +13,18 @@
     },
     {
         "name": "mirror",
-        "url": "assets/images/mirror.jpg"
+        "url": "assets/images/mirror-min.jpg"
     },
     {
         "name": "jahneration",
-        "url": "assets/images/jahneration.jpg"
+        "url": "assets/images/jahneration-min.jpg"
     },
     {
         "name": "about",
-        "url": "assets/images/about.jpg"
+        "url": "assets/images/about-min.jpg"
+    },
+    {
+        "name": "lvl",
+        "url": "assets/images/lvl.jpg"
     }
 ]

@@ -11,22 +11,34 @@
             display: none
             .item__info
                 position: absolute
-                top: 50%
-                left: 50%
+                bottom: 70px
+                right: 70px
                 color: white
-                text-align: center
+                text-align: right
                 display: flex
                 flex-flow: column
-                transform: translate(-50%, -50%)
+                // transform: translate(-50%, -50%)
                 h2
+                    transform: translateY(100%)
+                    opacity: 0
                     display: inline-block
                     font-family: $adieuBlack
-                    font-size: rem(31px)
+                    font-size: rem(55px)
                     text-transform: uppercase
                 h3
+                    transform: translateY(100%)
+                    opacity: 0
                     display: inline-block
                     font-family: $moderat
-                    font-size: rem(14px)
+                    font-size: rem(15px)
+                    text-transform: uppercase
+                    span
+                        width: 3px
+                        height: 3px
+                        background-color: white
+                        display: inline-block
+                        margin-bottom: 3px
+                        border-radius: 50px
             &.active
                 display: block
     &.active

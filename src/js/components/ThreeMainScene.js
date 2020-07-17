@@ -9,6 +9,7 @@ import mod from '../utils/mod'
 
 import SplitText from '../vendors/SplitText.js';
 import Hammer from 'hammerjs';
+import { Vector3 } from 'three';
 
 
 gsap.registerPlugin();
@@ -17,7 +18,7 @@ const SETTINGS = {
     position : {
         x: 0,
         y: 0,
-        z: 3
+        z: 4
     }
 }
 
@@ -38,22 +39,16 @@ class ThreeMainScene {
             infoBtn: this._container.querySelector('.js-info-btn'),
             infoDescription: this._container.querySelector('.js-description'),
             socialLink: this._container.querySelectorAll('.js-social'),
-            headPosition: this._container.querySelector('.js-head')
+            head: this._container.querySelector('.js-head')
         }
         this._setup();
-
-        // const gui = new dat.GUI();
-
-        // let cameraView = gui.addFolder('cameraView');
-        // cameraView.add(SETTINGS.position, 'x').min(-10).max(10).step(0.001).onChange(() => this._cameraSettingsChangedHandler())
-        // cameraView.add(SETTINGS.position, 'y').min(-10).max(10).step(0.001).onChange(() => this._cameraSettingsChangedHandler())
-        // cameraView.add(SETTINGS.position, 'z').min(-10).max(1000).step(0.001).onChange(() => this._cameraSettingsChangedHandler())
     }
 
     _setup() {
         this._setupValues();
         this._setupSplitText();
         this._setupHammer();
+        // this.getSizes();
 
         this._setupRenderer();
         this._setupScene();
@@ -79,8 +74,6 @@ class ThreeMainScene {
         window.addEventListener("DOMMouseScroll", () => this._scrollHandler(), false);
 
         this.hammer.on('swipeleft', (event) => this._swipeHandler(event))
-        // this.hammer.on('panleft', (event) => this._swipeHandler(event))
-        // this.hammer.on('panright', (event) => this._swipeHandler(event))
         this.hammer.on('swiperight', (event) => this._swipeHandler(event))
 
         document.addEventListener('mousemove', () => this._mouseMoveHandler());
@@ -97,8 +90,12 @@ class ThreeMainScene {
         this._isScrollEnabled = true
         this._wheelSensibility = 20
         this._isInfoEnabled = true
-        this._slides = [this._textures.whole, this._textures.dfts, this._textures.louvre, this._textures.mirror, this._textures.jahneration];
-        this._texturesTab = [this._textures.whole, this._textures.dfts, this._textures.louvre, this._textures.mirror, this._textures.jahneration, this._textures.about];
+
+        this.sizes = new THREE.Vector2(0, 0)
+		this.offset = new THREE.Vector2(0, 0)
+        
+        this._slides = [this._textures.whole, this._textures.louvre, this._textures.dfts, this._textures.mirror, this._textures.jahneration, this._textures.lvl];
+        this._texturesTab = [this._textures.whole, this._textures.louvre, this._textures.dfts, this._textures.mirror, this._textures.jahneration, this._textures.about];
 
     }
 
@@ -116,7 +113,7 @@ class ThreeMainScene {
             // alpha: true,
         });
 
-        this._renderer.setPixelRatio(3);
+        this._renderer.setPixelRatio(4);
     }
 
     _setupScene() {
@@ -150,7 +147,7 @@ class ThreeMainScene {
         let planeHeightAtDistance = 2 * Math.atan(vFov / 2) * distance;
         let planeWidthAtDistance = planeHeightAtDistance * aspect;
 
-        this._geometry = new THREE.PlaneBufferGeometry( planeWidthAtDistance, planeHeightAtDistance);
+        this._plane = new THREE.PlaneBufferGeometry( planeWidthAtDistance, planeHeightAtDistance);
 
         let uniforms = {
             color: { value: new THREE.Color( 0xffffff ) },
@@ -159,7 +156,8 @@ class ThreeMainScene {
             texture2: { value: this._textures.dfts },
             u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
             textureRatio : {value: 0},
-            screenRatio: {value: 0}
+            screenRatio: {value: 0},
+            u_mouse : {value: {x: 0, y: 0}}
         };
 
         this._shaderMaterial = new THREE.ShaderMaterial({
@@ -171,7 +169,7 @@ class ThreeMainScene {
            }
         });
 
-        this._sliderPlane = new THREE.Mesh( this._geometry, this._shaderMaterial );
+        this._sliderPlane = new THREE.Mesh( this._plane, this._shaderMaterial );
         this._sliderPlane.position.set(0, 0, meshPositionZ);
 
         this._scene.add( this._sliderPlane );
@@ -184,16 +182,11 @@ class ThreeMainScene {
 
     _setupHeadObject() {
         this._head = this._models.head.scene;
+
         this._head.scale.set(0.1, 0.1, 0.1)
-        let vector = new THREE.Vector3();
-
-        vector.project(this._camera)
-    
-        vector.x = (vector.x + 1) * this._canvas.width / 2;
-        vector.y = -(vector.y - 1) * this._canvas.height / 2;
-        vector.z = 1
-
-        this._head.position.set(vector.x, vector.y, vector.z )
+        // this._head.position.set(-1, 0, 0)
+        this._head.position.set(-4.5, 2, 0)
+        // console.log((20 / window.innerWidth) * 2 - 1)
         this._scene.add(this._head);
     }
 
@@ -204,10 +197,11 @@ class ThreeMainScene {
     }
 
     _toggleInfoContainer() {
-        // this._ui.aboutContainer.classList.toggle('active');
         if(this._ui.infoBtn.innerHTML === "Info") {
+            this._ui.head.classList.add("active")
             this._openInfoContainer();
         } else {
+            this._ui.head.classList.remove("active")
             this._closeInfoContainer();
         }
     }
@@ -226,7 +220,7 @@ class ThreeMainScene {
             this._ui.infoBtn.innerHTML = "close";
             TweenLite.fromTo(this._ui.infoBtn, 1.5, {y: "100%"}, {y: "0%", color: "#000", ease: Power3.easeOut})
         }})
-        // timeline.timeScale(0.1)
+
         timeline
         .fromTo(slideTitle, 0.3, {y: 0, autoAlpha: 1}, {y: "-100%", autoAlpha: 0, ease: Power3.easeIn})
         .fromTo(slideSubtitle, 0.3, {y: 0, autoAlpha: 1}, {y: "-100%", autoAlpha: 0, ease: Power3.easeIn, onComplete: () => {this._slider.classList.remove('active') }}, 0.1)
@@ -303,6 +297,18 @@ class ThreeMainScene {
         }
     }
 
+    firstSlideAnimation() {
+        this._isScrollEnabled = false
+
+        let slideTitle = this._ui.slide[this._currentSlide].querySelector('.js-title');
+        let slideSubtitle = this._ui.slide[this._currentSlide].querySelector('.js-subtitle');
+
+        let timeline = new TimelineLite();
+        
+        timeline.fromTo(slideTitle, 1, {y: "100%", autoAlpha: 0 }, { y: "0%", autoAlpha: 1, ease: Power3.easeOut}, 0.05);
+        timeline.fromTo(slideSubtitle, 1, {autoAlpha: 0, ease: Power3.easeOut }, { y: 0, autoAlpha: 1, ease: Power3.easeOut, onComplete: () => this._endScroll()}, 0.1);
+    }
+
     _setSlideOutAnimation(){
         let slideTitle = this._ui.slide[this._lastSlide].querySelector('.js-title');
         let slideSubtitle = this._ui.slide[this._lastSlide].querySelector('.js-subtitle');
@@ -349,16 +355,12 @@ class ThreeMainScene {
         
         this._shaderMaterial.uniforms.screenRatio.value = window.innerWidth / window.innerHeight
         this._shaderMaterial.uniforms.textureRatio.value = this._texturesTab[this._currentSlide].image.width / this._texturesTab[this._currentSlide].image.height
-        
-        this._canvas.width = this._width;
-        this._canvas.height = this._height;
-        // this._shaderMaterial.uniforms.u_res.value
-
         this._renderer.setSize(this._width, this._height);
         this._renderer.setPixelRatio(this._devicePixelRatio);
-        // this._camera.fov = window.innerHeight / window.innerWidth;
-        this._camera.aspect = this._width/this._height;
+
+        // this._camera.aspect = this._width/this._height;
         this._camera.updateProjectionMatrix();
+        // this.getSizes();
     }
 
     _animate() {
@@ -398,6 +400,9 @@ class ThreeMainScene {
     _mouseMoveHandler() {
         this._mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this._mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+        this._shaderMaterial.uniforms.u_mouse.value.x = this._mouse.x
+        this._shaderMaterial.uniforms.u_mouse.value.y = this._mouse.y
     }
 
 
@@ -408,6 +413,15 @@ class ThreeMainScene {
             SETTINGS.position.z,
         );
     }
+
+    screenXY(){
+        var projector = new THREE.Projector();
+        var pos = projector.projectVector( position, camera );
+
+        var xcoord = Math.round( (  pos.x + 1 ) * canvas.width  / 2 );
+        var ycoord = Math.round( ( -pos.y + 1 ) * canvas.height / 2 );
+        console.log(xcoord, ycoord)
+      };
 }
 
 export default ThreeMainScene;
